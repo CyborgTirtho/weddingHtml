@@ -15,66 +15,16 @@
         box-sizing: border-box;
         max-width: 1200px;
         margin: 0 auto;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.2);
     }
 
-    h1 {
-        font-size: 3rem;
-        color: #d32f2f;
-        margin-top: 20px;
-        position: relative;
-        z-index: 2;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
-    }
+    h1 { font-size: 3rem; color: #d32f2f; margin-top: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); }
+    .wedding-date { font-size: 1.5rem; color: #fbc02d; margin-bottom: 30px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
 
-    .wedding-date {
-        font-size: 1.5rem;
-        color: #fbc02d;
-        margin-bottom: 30px;
-        position: relative;
-        z-index: 2;
-        text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    }
+    .banner-container { position: relative; width: 100%; height: 0; padding-bottom: 56.25%; overflow: hidden; border-radius: 20px; margin-bottom: 30px; }
+    .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: filter 0.5s ease; }
+    .video-wrapper video { width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+    .banner-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,244,225,0.5); z-index:1; }
 
-    /* Video Banner */
-    .banner-container {
-        position: relative;
-        width: 100%;
-        height: 0;
-        padding-bottom: 56.25%; /* 16:9 aspect ratio */
-        overflow: hidden;
-        border-radius: 20px;
-        box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-        margin-bottom: 30px;
-    }
-
-    .video-wrapper {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        transition: filter 0.5s ease;
-    }
-
-    .video-wrapper video {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        z-index: 1;
-    }
-
-    .banner-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(255, 244, 225, 0.5);
-        z-index: 1;
-    }
-
-    /* Countdown container */
     #countdown {
         display: none; /* hidden initially */
         position: absolute;
@@ -98,20 +48,9 @@
         backdrop-filter: blur(4px);
     }
 
-    .time-unit span {
-        display: block;
-        font-size: 2rem;
-        font-weight: bold;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
-    }
+    .time-unit span { display: block; font-size: 2rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
+    .time-unit small { display: block; font-size: 0.8rem; color: #fbc02d; }
 
-    .time-unit small {
-        display: block;
-        font-size: 0.8rem;
-        color: #fbc02d;
-    }
-
-    /* Mobile responsive adjustments */
     @media (max-width: 768px) {
         h1 { font-size: 2rem; }
         .wedding-date { font-size: 1.2rem; }
@@ -119,87 +58,64 @@
         .time-unit span { font-size: 1.5rem; }
         .banner-container { padding-bottom: 50%; }
     }
-
-    @media (max-width: 480px) {
-        h1 { font-size: 1.5rem; }
-        .wedding-date { font-size: 1rem; }
-        .time-unit span { font-size: 1.2rem; }
-        .time-unit small { font-size: 0.7rem; }
-        .banner-container { padding-bottom: 60%; }
-    }
 </style>
 </head>
 <body>
 
-<!-- Video Banner -->
+<h1>Chiranjib & Prapti</h1>
+<div class="wedding-date">January 23, 2026</div>
+
 <div class="banner-container">
     <div class="video-wrapper" id="videoWrapper">
-        <video id="weddingVideo" autoplay muted playsinline loop>
+        <video id="weddingVideo" autoplay muted playsinline>
             <source src="Pink_Floral.mp4" type="video/mp4">
             Your browser does not support the video tag.
         </video>
         <div class="banner-overlay"></div>
     </div>
 
-    <!-- Countdown Timer over video -->
     <div id="countdown">
-        <div class="time-unit">
-            <span id="days">00</span>
-            <small>Days</small>
-        </div>
-        <div class="time-unit">
-            <span id="hours">00</span>
-            <small>Hours</small>
-        </div>
-        <div class="time-unit">
-            <span id="minutes">00</span>
-            <small>Minutes</small>
-        </div>
-        <div class="time-unit">
-            <span id="seconds">00</span>
-            <small>Seconds</small>
-        </div>
+        <div class="time-unit"><span id="days">00</span><small>Days</small></div>
+        <div class="time-unit"><span id="hours">00</span><small>Hours</small></div>
+        <div class="time-unit"><span id="minutes">00</span><small>Minutes</small></div>
+        <div class="time-unit"><span id="seconds">00</span><small>Seconds</small></div>
     </div>
 </div>
 
 <script>
-// Countdown script
 const weddingDate = new Date("January 23, 2026 00:00:00").getTime();
 const countdownDiv = document.getElementById("countdown");
 const videoWrapper = document.getElementById("videoWrapper");
 const video = document.getElementById("weddingVideo");
 
-// iOS autoplay fix: try to play the video on user interaction if autoplay fails
-function tryPlayVideo() {
-    video.play().catch(() => {
-        // If user interaction needed, wait for tap
-        document.body.addEventListener('click', () => video.play(), { once: true });
-    });
-}
-
-video.addEventListener("ended", () => {
+function showCountdown() {
     videoWrapper.style.filter = "blur(6px)";
     countdownDiv.style.display = "flex";
     startCountdown();
+}
+
+// Attempt to autoplay, fallback to user tap on iOS
+video.play().catch(() => {
+    document.body.addEventListener('click', () => video.play(), { once: true });
 });
 
-// Try autoplay immediately
-tryPlayVideo();
+// When video ends, show countdown
+video.addEventListener("ended", showCountdown);
 
 function startCountdown() {
     const countdown = setInterval(() => {
         const now = new Date().getTime();
         const distance = weddingDate - now;
 
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        const days = Math.floor(distance / (1000*60*60*24));
+        const hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
+        const minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
+        const seconds = Math.floor((distance % (1000*60)) / 1000);
 
-        document.getElementById("days").innerText = days.toString().padStart(2,"0");
-        document.getElementById("hours").innerText = hours.toString().padStart(2,"0");
-        document.getElementById("minutes").innerText = minutes.toString().padStart(2,"0");
-        document.getElementById("seconds").innerText = seconds.toString().padStart(2,"0");
+        document.getElementById("days").innerText = String(days).padStart(2,"0");
+        document.getElementById("hours").innerText = String(hours).padStart(2,"0");
+        document.getElementById("minutes").innerText = String(minutes).padStart(2,"0");
+        document.getElementById("seconds").innerText = String(seconds).padStart(2,"0");
 
         if(distance < 0){
             clearInterval(countdown);
