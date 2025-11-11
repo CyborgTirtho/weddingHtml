@@ -131,9 +131,6 @@
 </head>
 <body>
 
-<h1>Chiranjib & Prapti</h1>
-<div class="wedding-date">January 23, 2026</div>
-
 <!-- Video Banner -->
 <div class="banner-container">
     <div class="video-wrapper" id="videoWrapper">
@@ -146,4 +143,71 @@
 
     <!-- Countdown Timer over video -->
     <div id="countdown">
-        <div class
+        <div class="time-unit">
+            <span id="days">00</span>
+            <small>Days</small>
+        </div>
+        <div class="time-unit">
+            <span id="hours">00</span>
+            <small>Hours</small>
+        </div>
+        <div class="time-unit">
+            <span id="minutes">00</span>
+            <small>Minutes</small>
+        </div>
+        <div class="time-unit">
+            <span id="seconds">00</span>
+            <small>Seconds</small>
+        </div>
+    </div>
+</div>
+
+<script>
+// Countdown script
+const weddingDate = new Date("January 23, 2026 00:00:00").getTime();
+const countdownDiv = document.getElementById("countdown");
+const videoWrapper = document.getElementById("videoWrapper");
+const video = document.getElementById("weddingVideo");
+
+// iOS autoplay fix: try to play the video on user interaction if autoplay fails
+function tryPlayVideo() {
+    video.play().catch(() => {
+        // If user interaction needed, wait for tap
+        document.body.addEventListener('click', () => video.play(), { once: true });
+    });
+}
+
+video.addEventListener("ended", () => {
+    videoWrapper.style.filter = "blur(6px)";
+    countdownDiv.style.display = "flex";
+    startCountdown();
+});
+
+// Try autoplay immediately
+tryPlayVideo();
+
+function startCountdown() {
+    const countdown = setInterval(() => {
+        const now = new Date().getTime();
+        const distance = weddingDate - now;
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById("days").innerText = days.toString().padStart(2,"0");
+        document.getElementById("hours").innerText = hours.toString().padStart(2,"0");
+        document.getElementById("minutes").innerText = minutes.toString().padStart(2,"0");
+        document.getElementById("seconds").innerText = seconds.toString().padStart(2,"0");
+
+        if(distance < 0){
+            clearInterval(countdown);
+            countdownDiv.innerHTML = "<h2>Wedding Day is Here!</h2>";
+        }
+    }, 1000);
+}
+</script>
+
+</body>
+</html>
