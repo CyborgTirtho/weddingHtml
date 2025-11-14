@@ -5,112 +5,202 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Video + Animated Tooltip</title>
 <style>
-  body {
-    margin: 0;
-    background: #000;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
-    position: relative;
+  :root{ --tooltip-z: 99999; }
+  html,body{
+    height:100%;
+    margin:0;
+    background:#000;
     font-family: Arial, sans-serif;
   }
 
-  video {
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
-    object-position: center;
-    position: absolute;
-    top: 0;
-    left: 0;
+  /* Container to respect safe-area */
+  .stage{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+    padding-left:env(safe-area-inset-left);
+    padding-right:env(safe-area-inset-right);
   }
 
-  /* Hidden by default */
-  #tooltip {
-    z-index: 9999;
-    position: absolute;
-    bottom: 20%;
-    left: 50%;
-    transform: translateX(-50%) scale(0.5);
-    background: #ffffff;
-    padding: 12px 18px;
-    border-radius: 20px;
-    font-size: 16px;
-    opacity: 0;
-    pointer-events: none;
-    transition: 0.4s ease;
-    box-shadow: 0px 6px 20px rgba(0,0,0,0.3);
+  /* Fullscreen video that won't cut in Safari (contain) */
+  video{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:100%;
+    height:100%;
+    transform:translate(-50%,-50%);
+    object-fit:contain; /* Prevent cropping on iPhone Safari */
+    background:#000;
+    transition:opacity 1s ease;
   }
 
-  /* Speech bubble tail */
-  #tooltip::after {
-    content: "";
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-top: 10px solid #ffffff;
+  /* When video loaded */
+  .videoLoaded{ opacity:1; }
+  video{ opacity:0; }
+
+  /* Tooltip (speech bubble) */
+  #tooltip{
+    position:absolute;
+    bottom:35vh;
+    left:50%;
+    transform:translateX(-50%);
+    background:#ffffff;
+    color:#111;
+    padding:4px 6px; /* ~30% of original */
+    border-radius:10px; /* smaller bubble */
+    font-size:0.35rem; /* text scaled to ~30% */
+    font-weight:600;
+    opacity:0;
+    pointer-events:none;
+    box-shadow:0 0 10px rgba(0,255,80,0.9), 0 0 20px rgba(0,255,80,0.7), 0 0 35px rgba(0,255,80,0.5);
+    transition:opacity 0.4s ease-in-out;
+    animation:bouncePulse 0.8s infinite ease-in-out, glowPulse 1s infinite ease-in-out;
+    z-index:var(--tooltip-z);
+    display:flex;
+    gap:3px;
+    align-items:center;
+}
+
+  #tooltip .emoji{
+  font-size:9px; /* 50% smaller */
+}
+  #tooltip .text{ font-size:15px; color:#111; }
+
+  /* Tail */
+  #tooltip::after{
+    content:"";
+    position:absolute;
+    bottom:-10px;
+    left:50%;
+    transform:translateX(-50%);
+    border-left:10px solid transparent;
+    border-right:10px solid transparent;
+    border-top:10px solid #ffffff;
   }
 
-  /* Pop animation */
-  .showTooltip {
-    opacity: 1 !important;
-    transform: translateX(-50%) scale(1) !important;
-    pointer-events: auto;
-  }
-  /* iPhone safe‑area support */
-  body {
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: env(safe-area-inset-bottom);
-    padding-left: env(safe-area-inset-left);
-    padding-right: env(safe-area-inset-right);
+  /* Visible state */
+  .showTooltip{
+    opacity:1 !important;
+    pointer-events:auto !important;
+    transform: translateX(-50%) scale(1);
   }
 
-  /* Video fade‑in */
-  #myVideo {
-    opacity: 0;
-    transition: opacity 1s ease;
+  /* Make tooltip focusable appearance */
+  #tooltip:focus{
+    outline: none;
+    box-shadow: 0 8px 30px rgba(76,139,245,0.25), 0 0 0 3px rgba(76,139,245,0.12);
   }
 
-  .videoLoaded {
-    opacity: 1 !important;
+  /* Larger touch target on small screens */
+  @media (max-width:480px){
+    #tooltip{ padding:14px 20px; font-size:16px; }
   }
-
+    @keyframes glowPulse{
+      0%{
+        box-shadow:0 0 20px rgba(0,255,80,0.8),0 0 45px rgba(0,255,80,0.6),0 0 70px rgba(0,255,80,0.4);
+      }
+      50%{
+        box-shadow:0 0 35px rgba(0,255,120,1),0 0 70px rgba(0,255,120,0.85),0 0 110px rgba(0,255,120,0.7);
+      }
+      100%{
+        box-shadow:0 0 20px rgba(0,255,80,0.8),0 0 45px rgba(0,255,80,0.6),0 0 70px rgba(0,255,80,0.4);
+      }
+    }
 </style>
 </head>
 <body>
 
-<video id="myVideo" playsinline autoplay muted>
-  <source src="Video.mp4" type="video/mp4" />
-</video>
+<div class="stage">
+  <video id="myVideo" playsinline autoplay muted preload="auto">
+    <source src="Video.mp4" type="video/mp4" />
+    <!-- fallback text -->
+  </video>
 
-<div id="tooltip">📍 Tap here for Address Map</div>
+  <!-- Speech bubble tooltip (initially hidden) -->
+  <div id="tooltip" role="button" tabindex="0" aria-label="Open Address in Maps">
+    <span class="emoji">📍</span>
+    <span class="text">Tap to open Address</span>
+  </div>
+</div>
 
 <script>
-  const video = document.getElementById("myVideo");
-  const tooltip = document.getElementById("tooltip");
+(function(){
+  const video = document.getElementById('myVideo');
+  const tooltip = document.getElementById('tooltip');
+  const MAP_URL = 'https://maps.app.goo.gl/mct3ydbxh9V3nsiB8';
 
-  // When video ends, show tooltip
-  // Fade‑in when video is ready
-video.addEventListener("loadeddata", () => {
-  video.classList.add("videoLoaded");
-});
+  // Ensure tooltip sits above everything
+  tooltip.style.zIndex = getComputedStyle(document.documentElement).getPropertyValue('--tooltip-z') || 99999;
 
-  // When video ends, show tooltip
-  video.addEventListener("ended", () => {
-    tooltip.classList.add("showTooltip");
+  // When video data is ready, fade-in
+  video.addEventListener('loadeddata', () => {
+    video.classList.add('videoLoaded');
   });
 
-  // Tooltip click opens Google map deep link
-  tooltip.addEventListener("click", () => {
-    window.location.href = "https://maps.app.goo.gl/mct3ydbxh9V3nsiB8";
+  // On video end show tooltip (with a slight delay for UX)
+  video.addEventListener('ended', () => {
+    // Make sure video won't intercept touches when tooltip visible
+    video.style.pointerEvents = 'none';
+
+    // Show tooltip
+    tooltip.classList.add('showTooltip');
+
+    // For accessibility focus it
+    tooltip.focus();
   });
+
+  // Helper to open URL based on device
+  function openMapLink(){
+    const ua = navigator.userAgent || '';
+
+    // On iOS/Android prefer navigation in same tab (deep link will open app)
+    if (/iPhone|iPad|iPod|Android/i.test(ua)){
+      // Use location.href to attempt to open the app
+      window.location.href = MAP_URL;
+      return;
+    }
+
+    // Desktop fallback - open new tab
+    window.open(MAP_URL, '_blank');
+  }
+
+  // Click / touchend handler
+  function onActivate(ev){
+    // Prevent double events (touch + click)
+    if (ev) ev.preventDefault && ev.preventDefault();
+    // hide tooltip immediately to show transition
+    tooltip.classList.remove('showTooltip');
+    // restore pointer events on video after small delay
+    setTimeout(()=>{ video.style.pointerEvents = ''; }, 300);
+    openMapLink();
+  }
+
+  // Add both touchend and click to be safe on all devices
+  tooltip.addEventListener('touchend', onActivate, {passive:false});
+  tooltip.addEventListener('click', onActivate);
+
+  // Keyboard support (Enter / Space)
+  tooltip.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
+      e.preventDefault();
+      onActivate(e);
+    }
+  });
+
+  // If user taps anywhere while tooltip visible, and it's outside tooltip, dismiss it
+  document.addEventListener('touchstart', (e)=>{
+    if (!tooltip.classList.contains('showTooltip')) return;
+    if (!tooltip.contains(e.target)){
+      tooltip.classList.remove('showTooltip');
+      setTimeout(()=>{ video.style.pointerEvents = ''; }, 300);
+    }
+  }, {passive:true});
+
+})();
 </script>
 
 </body>
