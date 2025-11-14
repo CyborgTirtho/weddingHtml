@@ -3,124 +3,39 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Chiranjib & Prapti Wedding</title>
+<title>Mobile Fullscreen GIF</title>
+
 <style>
-    body {
+    html, body {
         margin: 0;
-        font-family: 'Noto Serif Bengali', serif;
-        background-color: #fff4e1;
-        color: #6b2a1f;
-        text-align: center;
-        padding: 20px;
-        box-sizing: border-box;
-        max-width: 1200px;
-        margin: 0 auto;
+        padding: 0;
+        height: 100%;
+        background: #000;
+        overflow: hidden;
     }
 
-    h1 { font-size: 3rem; color: #d32f2f; margin-top: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); }
-    .wedding-date { font-size: 1.5rem; color: #fbc02d; margin-bottom: 30px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
-
-    .banner-container { position: relative; width: 100%; height: 0; padding-bottom: 56.25%; overflow: hidden; border-radius: 20px; margin-bottom: 30px; }
-    .video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transition: filter 0.5s ease; }
-    .video-wrapper video { width: 100%; height: 100%; object-fit: cover; z-index: 1; }
-    .banner-overlay { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(255,244,225,0.5); z-index:1; }
-
-    #countdown {
-        display: none; /* hidden initially */
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+    .container {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
         justify-content: center;
-        gap: 20px;
-        flex-wrap: wrap;
-        z-index: 5;
-        text-align: center;
+        background: #000;
     }
 
-    .time-unit {
-        display: inline-block;
-        padding: 15px 25px;
-        background-color: rgba(211, 47, 47, 0.6);
-        border-radius: 10px;
-        box-shadow: 0 3px 8px rgba(0,0,0,0.2);
-        color: #fff4e1;
-        backdrop-filter: blur(4px);
-    }
-
-    .time-unit span { display: block; font-size: 2rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.5); }
-    .time-unit small { display: block; font-size: 0.8rem; color: #fbc02d; }
-
-    @media (max-width: 768px) {
-        h1 { font-size: 2rem; }
-        .wedding-date { font-size: 1.2rem; }
-        .time-unit { padding: 10px 15px; }
-        .time-unit span { font-size: 1.5rem; }
-        .banner-container { padding-bottom: 50%; }
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain; /* change to 'cover' if you want full cover */
     }
 </style>
+
 </head>
 <body>
 
-<div class="banner-container">
-    <div class="video-wrapper" id="videoWrapper">
-        <video id="weddingVideo" autoplay muted playsinline>
-            <source src="Pink_Floral.mp4" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-        <div class="banner-overlay"></div>
-    </div>
-
-    <div id="countdown">
-        <div class="time-unit"><span id="days">00</span><small>Days</small></div>
-        <div class="time-unit"><span id="hours">00</span><small>Hours</small></div>
-        <div class="time-unit"><span id="minutes">00</span><small>Minutes</small></div>
-        <div class="time-unit"><span id="seconds">00</span><small>Seconds</small></div>
-    </div>
+<div class="container">
+    <img src="ezgif-3dba0a9f2eb5e837.gif" alt="GIF">
 </div>
-
-<script>
-const weddingDate = new Date("January 23, 2026 00:00:00").getTime();
-const countdownDiv = document.getElementById("countdown");
-const videoWrapper = document.getElementById("videoWrapper");
-const video = document.getElementById("weddingVideo");
-
-function showCountdown() {
-    videoWrapper.style.filter = "blur(6px)";
-    countdownDiv.style.display = "flex";
-    startCountdown();
-}
-
-// Attempt to autoplay, fallback to user tap on iOS
-video.play().catch(() => {
-    document.body.addEventListener('click', () => video.play(), { once: true });
-});
-
-// When video ends, show countdown
-video.addEventListener("ended", showCountdown);
-
-function startCountdown() {
-    const countdown = setInterval(() => {
-        const now = new Date().getTime();
-        const distance = weddingDate - now;
-
-        const days = Math.floor(distance / (1000*60*60*24));
-        const hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
-        const minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
-        const seconds = Math.floor((distance % (1000*60)) / 1000);
-
-        document.getElementById("days").innerText = String(days).padStart(2,"0");
-        document.getElementById("hours").innerText = String(hours).padStart(2,"0");
-        document.getElementById("minutes").innerText = String(minutes).padStart(2,"0");
-        document.getElementById("seconds").innerText = String(seconds).padStart(2,"0");
-
-        if(distance < 0){
-            clearInterval(countdown);
-            countdownDiv.innerHTML = "<h2>Wedding Day is Here!</h2>";
-        }
-    }, 1000);
-}
-</script>
 
 </body>
 </html>
