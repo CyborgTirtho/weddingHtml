@@ -1,205 +1,192 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Video + Animated Tooltip</title>
+<title>শুভ বিবাহ</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
-  :root{ --tooltip-z: 99999; }
-  html,body{
-    height:100%;
-    margin:0;
-    background:#000;
-    font-family: Arial, sans-serif;
-  }
-
-  /* Container to respect safe-area */
-  .stage{
-    position:relative;
-    width:100vw;
-    height:100vh;
-    overflow:hidden;
-    padding-top:env(safe-area-inset-top);
-    padding-bottom:env(safe-area-inset-bottom);
-    padding-left:env(safe-area-inset-left);
-    padding-right:env(safe-area-inset-right);
-  }
-
-  /* Fullscreen video that won't cut in Safari (contain) */
-  video{
-    position:absolute;
-    top:50%;
-    left:50%;
-    width:100%;
-    height:100%;
-    transform:translate(-50%,-50%);
-    object-fit:contain; /* Prevent cropping on iPhone Safari */
-    background:#000;
-    transition:opacity 1s ease;
-  }
-
-  /* When video loaded */
-  .videoLoaded{ opacity:1; }
-  video{ opacity:0; }
-
-  /* Tooltip (speech bubble) */
-  #tooltip{
-    position:absolute;
-    bottom:35vh;
-    left:50%;
-    transform:translateX(-50%);
-    background:#ffffff;
-    color:#111;
-    padding:4px 6px; /* ~30% of original */
-    border-radius:10px; /* smaller bubble */
-    font-size:0.35rem; /* text scaled to ~30% */
-    font-weight:600;
-    opacity:0;
-    pointer-events:none;
-    box-shadow:0 0 10px rgba(0,255,80,0.9), 0 0 20px rgba(0,255,80,0.7), 0 0 35px rgba(0,255,80,0.5);
-    transition:opacity 0.4s ease-in-out;
-    animation:bouncePulse 0.8s infinite ease-in-out, glowPulse 1s infinite ease-in-out;
-    z-index:var(--tooltip-z);
-    display:flex;
-    gap:3px;
-    align-items:center;
+:root{
+  --red:#b30000;
+  --gold:#d4af37;
+  --offwhite:#fffaf0;
 }
 
-  #tooltip .emoji{
-  font-size:9px; /* 50% smaller */
+html,body{
+  margin:0;
+  background:#000;
+  font-family:'Noto Serif Bengali', serif;
+  scroll-behavior:smooth;
 }
-  #tooltip .text{ font-size:15px; color:#111; }
 
-  /* Tail */
-  #tooltip::after{
-    content:"";
-    position:absolute;
-    bottom:-10px;
-    left:50%;
-    transform:translateX(-50%);
-    border-left:10px solid transparent;
-    border-right:10px solid transparent;
-    border-top:10px solid #ffffff;
-  }
+/* ===== VIDEO STAGE ===== */
+.stage{
+  position:relative;
+  width:100vw;
+  height:100vh;
+  overflow:hidden;
+  padding:
+    env(safe-area-inset-top)
+    env(safe-area-inset-right)
+    env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
 
-  /* Visible state */
-  .showTooltip{
-    opacity:1 !important;
-    pointer-events:auto !important;
-    transform: translateX(-50%) scale(1);
-  }
+video{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:100%;
+  height:100%;
+  transform:translate(-50%,-50%);
+  object-fit:contain;
+  background:#000;
+  opacity:0;
+  transition:opacity 1.2s ease;
+}
 
-  /* Make tooltip focusable appearance */
-  #tooltip:focus{
-    outline: none;
-    box-shadow: 0 8px 30px rgba(76,139,245,0.25), 0 0 0 3px rgba(76,139,245,0.12);
-  }
+.videoLoaded{ opacity:1; }
 
-  /* Larger touch target on small screens */
-  @media (max-width:480px){
-    #tooltip{ padding:14px 20px; font-size:16px; }
+/* ===== TOOLTIP ===== */
+#tooltip{
+  position:absolute;
+  bottom:32vh;
+  left:50%;
+  transform:translateX(-50%);
+  background:var(--offwhite);
+  color:var(--red);
+  padding:10px 18px;
+  border-radius:20px;
+  font-size:15px;
+  font-weight:600;
+  opacity:0;
+  pointer-events:none;
+  border:2px solid var(--gold);
+  box-shadow:
+    0 0 18px rgba(212,175,55,.6),
+    0 0 35px rgba(179,0,0,.4);
+  transition:opacity .4s ease;
+  z-index:99999;
+}
+
+.showTooltip{
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* ===== GALLERY (HIDDEN INITIALLY) ===== */
+#gallerySection{
+  display:none;
+  min-height:100vh;
+  background:radial-gradient(circle at top, #2b0000, #0a0000);
+  color:var(--offwhite);
+  padding:50px 20px;
+}
+
+#gallerySection.show{
+  display:block;
+}
+
+#gallerySection h2{
+  text-align:center;
+  font-size:26px;
+  margin-bottom:6px;
+  color:var(--gold);
+}
+
+#gallerySection p{
+  text-align:center;
+  margin-bottom:30px;
+  color:#ffdede;
+}
+
+/* ===== PINTEREST STYLE MASONRY ===== */
+.masonry{
+  column-count:1;
+  column-gap:16px;
+}
+
+/* Tablet */
+@media (min-width:600px){
+  .masonry{
+    column-count:2;
   }
-    @keyframes glowPulse{
-      0%{
-        box-shadow:0 0 20px rgba(0,255,80,0.8),0 0 45px rgba(0,255,80,0.6),0 0 70px rgba(0,255,80,0.4);
-      }
-      50%{
-        box-shadow:0 0 35px rgba(0,255,120,1),0 0 70px rgba(0,255,120,0.85),0 0 110px rgba(0,255,120,0.7);
-      }
-      100%{
-        box-shadow:0 0 20px rgba(0,255,80,0.8),0 0 45px rgba(0,255,80,0.6),0 0 70px rgba(0,255,80,0.4);
-      }
-    }
+}
+
+/* Desktop */
+@media (min-width:900px){
+  .masonry{
+    column-count:3;
+  }
+}
+
+/* Masonry items */
+.masonry img{
+  width:100%;
+  margin-bottom:16px;
+  border-radius:20px;
+  border:3px solid var(--gold);
+  box-shadow:0 15px 40px rgba(0,0,0,.8);
+  break-inside:avoid;
+  object-fit:cover;
+  transition:transform .3s ease;
+}
+
+/* Hover effect (desktop only) */
+@media (hover:hover){
+  .masonry img:hover{
+    transform:scale(1.02);
+  }
+}
 </style>
 </head>
+
 <body>
 
+<!-- ===== VIDEO SECTION ===== -->
 <div class="stage">
-  <video id="myVideo" playsinline autoplay muted preload="auto">
+  <video id="myVideo" autoplay muted playsinline preload="auto">
     <source src="Video.mp4" type="video/mp4" />
-    <!-- fallback text -->
   </video>
 
-  <!-- Speech bubble tooltip (initially hidden) -->
-  <div id="tooltip" role="button" tabindex="0" aria-label="Open Address in Maps">
-    <span class="emoji">📍</span>
-    <span class="text">Tap to open Address</span>
-  </div>
+  <div id="tooltip">📍 বিবাহ স্থানের দিকনির্দেশ</div>
 </div>
+
+<!-- ===== PINTEREST GALLERY ===== -->
+<section id="gallerySection">
+  <h2>শুভ বিবাহ</h2>
+  <p>চিরঞ্জিব ✦ প্রাপ্তি</p>
+
+  <div class="masonry">
+    <img src="img1.jpeg" alt="">
+    <img src="img2.jpeg" alt="">
+    <img src="img3.jpeg" alt="">
+    <img src="img4.jpeg" alt="">
+    <img src="img5.jpg" alt="">
+    <img src="img6.jpg" alt="">
+  </div>
+</section>
 
 <script>
 (function(){
   const video = document.getElementById('myVideo');
+  const gallery = document.getElementById('gallerySection');
   const tooltip = document.getElementById('tooltip');
-  const MAP_URL = 'https://maps.app.goo.gl/ybogCj6X94kUtstQ7';
 
-  // Ensure tooltip sits above everything
-  tooltip.style.zIndex = getComputedStyle(document.documentElement).getPropertyValue('--tooltip-z') || 99999;
-
-  // When video data is ready, fade-in
-  video.addEventListener('loadeddata', () => {
+  video.addEventListener('loadeddata',()=>{
     video.classList.add('videoLoaded');
   });
 
-  // On video end show tooltip (with a slight delay for UX)
-  video.addEventListener('ended', () => {
-    // Make sure video won't intercept touches when tooltip visible
-    video.style.pointerEvents = 'none';
-
-    // Show tooltip
+  video.addEventListener('ended',()=>{
     tooltip.classList.add('showTooltip');
+    gallery.classList.add('show');
 
-    // For accessibility focus it
-    tooltip.focus();
+    setTimeout(()=>{
+      gallery.scrollIntoView({behavior:'smooth'});
+    },500);
   });
-
-  // Helper to open URL based on device
-  function openMapLink(){
-    const ua = navigator.userAgent || '';
-
-    // On iOS/Android prefer navigation in same tab (deep link will open app)
-    if (/iPhone|iPad|iPod|Android/i.test(ua)){
-      // Use location.href to attempt to open the app
-      window.location.href = MAP_URL;
-      return;
-    }
-
-    // Desktop fallback - open new tab
-    window.open(MAP_URL, '_blank');
-  }
-
-  // Click / touchend handler
-  function onActivate(ev){
-    // Prevent double events (touch + click)
-    if (ev) ev.preventDefault && ev.preventDefault();
-    // hide tooltip immediately to show transition
-    tooltip.classList.remove('showTooltip');
-    // restore pointer events on video after small delay
-    setTimeout(()=>{ video.style.pointerEvents = ''; }, 300);
-    openMapLink();
-  }
-
-  // Add both touchend and click to be safe on all devices
-  tooltip.addEventListener('touchend', onActivate, {passive:false});
-  tooltip.addEventListener('click', onActivate);
-
-  // Keyboard support (Enter / Space)
-  tooltip.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar'){
-      e.preventDefault();
-      onActivate(e);
-    }
-  });
-
-  // If user taps anywhere while tooltip visible, and it's outside tooltip, dismiss it
-  document.addEventListener('touchstart', (e)=>{
-    if (!tooltip.classList.contains('showTooltip')) return;
-    if (!tooltip.contains(e.target)){
-      tooltip.classList.remove('showTooltip');
-      setTimeout(()=>{ video.style.pointerEvents = ''; }, 300);
-    }
-  }, {passive:true});
-
 })();
 </script>
 
