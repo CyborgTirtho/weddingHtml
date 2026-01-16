@@ -1,252 +1,472 @@
 <!DOCTYPE html>
 <html lang="bn">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>শুভ বিবাহ</title>
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600&display=swap" rel="stylesheet" />
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>শুভ বিবাহ</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;600&display=swap"
+      rel="stylesheet" />
 
-<style>
-:root {
-  --gold: #d4af37;
-  --red: #b30000;
-  --offwhite: #fffaf0;
-}
+    <style>
+      :root {
+        --gold: #d4af37;
+        --red: #b30000;
+        --offwhite: #fffaf0;
+      }
 
-html, body {
-  margin: 0;
-  background: #000;
-  font-family: "Noto Serif Bengali", serif;
-}
+      html,
+      body {
+        margin: 0;
+        font-family: "Noto Serif Bengali", serif;
+        background: #000;
+      }
 
-/* ===== VIDEO ===== */
-#videoStage {
-  width: 100vw;
-  height: 100vh;
-  position: relative;
-  visibility: hidden;
-  opacity: 0;
-  transition: opacity 1s;
-}
-#videoStage.showVideo {
-  visibility: visible;
-  opacity: 1;
-}
+      /* VIDEO */
+      #videoStage {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 1s;
+      }
+      #videoStage.showVideo {
+        visibility: visible;
+        opacity: 1;
+      }
+      video {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background: #000;
+      }
 
-video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background: #000;
-}
+      /* TOOLTIP */
+      #tooltip {
+        position: absolute;
+        bottom: 32vh;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px 18px;
+        background: var(--offwhite);
+        color: var(--red);
+        border-radius: 20px;
+        border: 2px solid var(--gold);
+        opacity: 0;
+        transition: 0.4s;
+        z-index: 20;
+        text-decoration: none;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+      }
+      #tooltip:hover {
+        background: #fff;
+        transform: translateX(-50%) scale(1.05);
+      }
+      .showTooltip {
+        opacity: 1;
+      }
 
-/* ===== TOOLTIP ===== */
-#tooltip {
-  position: absolute;
-  bottom: 32vh;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 18px;
-  background: var(--offwhite);
-  color: var(--red);
-  border-radius: 20px;
-  border: 2px solid var(--gold);
-  opacity: 0;
-  transition: 0.4s;
-  z-index: 20;
-  text-decoration: none;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
-}
-#tooltip:hover { background: #fff; transform: translateX(-50%) scale(1.05); }
-.showTooltip { opacity:1; }
+      /* COUNTDOWN */
+      #countdown {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 52px;
+        color: var(--gold);
+        text-align: center;
+        backdrop-filter: blur(8px);
+        background: rgba(0, 0, 0, 0.45);
+        opacity: 0;
+        transition: 0.6s;
+      }
+      #countdown.show {
+        opacity: 1;
+      }
 
-/* ===== COUNTDOWN ===== */
-#countdown {
-  position: absolute;
-  inset:0;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size: 52px;
-  color: var(--gold);
-  text-align:center;
-  backdrop-filter: blur(8px);
-  background: rgba(0,0,0,0.45);
-  opacity:0;
-  transition: 0.6s;
-}
-#countdown.show { opacity:1; }
+      /* ARROW */
+      #downArrow {
+        position: absolute;
+        bottom: 8vh;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 54px;
+        height: 54px;
+        border-radius: 50%;
+        border: 2px solid var(--gold);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        animation: pulse 1.4s infinite;
+        cursor: pointer;
+        z-index: 50; /* ensure arrow is above video */
+        pointer-events: none; /* disable until shown */
+      }
+      #downArrow::before {
+        content: "";
+        width: 14px;
+        height: 14px;
+        border-right: 3px solid var(--gold);
+        border-bottom: 3px solid var(--gold);
+        transform: rotate(45deg);
+      }
+      #downArrow.show {
+        opacity: 1;
+        pointer-events: auto; /* enable clicking when shown */
+      }
+      @keyframes pulse {
+        from {
+          transform: translateX(-50%) scale(1);
+        }
+        to {
+          transform: translateX(-50%) scale(1.15);
+        }
+      }
 
-/* ===== ARROW ===== */
-#downArrow {
-  position:absolute;
-  bottom:8vh;
-  left:50%;
-  transform:translateX(-50%);
-  width:54px;
-  height:54px;
-  border-radius:50%;
-  border:2px solid var(--gold);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  opacity:0;
-  animation:pulse 1.4s infinite;
-  cursor:pointer;
-}
-#downArrow::before {
-  content:"";
-  width:14px; height:14px;
-  border-right:3px solid var(--gold);
-  border-bottom:3px solid var(--gold);
-  transform:rotate(45deg);
-}
-#downArrow.show { opacity:1; }
-@keyframes pulse { from { transform:translateX(-50%) scale(1); } to { transform:translateX(-50%) scale(1.15); } }
+      /* GALLERY */
+      #gallerySection {
+        display: none;
+        min-height: 100vh;
+        background: radial-gradient(circle at top, #2b0000, #0a0000);
+        padding: 60px 20px;
+        opacity: 0;
+        transform: translateY(40px);
+        transition: 1s;
+      }
+      #gallerySection.show {
+        display: block;
+        opacity: 1;
+        transform: translateY(0);
+      }
+      #gallerySection h2 {
+        text-align: center;
+        font-size: 32px;
+        color: var(--gold);
+      }
+      #gallerySection p {
+        text-align: center;
+        font-size: 18px;
+        color: #fff2cc;
+        margin-bottom: 40px;
+      }
+      .masonry {
+        column-count: 1;
+        column-gap: 16px;
+      }
+      @media (min-width: 600px) {
+        .masonry {
+          column-count: 2;
+        }
+      }
+      @media (min-width: 900px) {
+        .masonry {
+          column-count: 3;
+        }
+      }
+      .masonry img {
+        width: 100%;
+        margin-bottom: 16px;
+        border-radius: 20px;
+        border: 3px solid var(--gold);
+      }
 
-/* ===== GALLERY ===== */
-#gallerySection { display:none; min-height:100vh; background: radial-gradient(circle at top,#2b0000,#0a0000); padding:60px 20px; opacity:0; transform:translateY(40px); transition:1s; }
-#gallerySection.show { display:block; opacity:1; transform:translateY(0); }
-#gallerySection h2 { text-align:center; font-size:32px; color:var(--gold);}
-#gallerySection p { text-align:center; font-size:18px; color:#fff2cc; margin-bottom:40px; }
-.masonry { column-count:1; column-gap:16px; }
-@media(min-width:600px){ .masonry{ column-count:2; } }
-@media(min-width:900px){ .masonry{ column-count:3; } }
-.masonry img { width:100%; margin-bottom:16px; border-radius:20px; border:3px solid var(--gold); }
+      /* INVITATION PARAGRAPH */
+      #invitation {
+        max-width: 800px;
+        margin: 40px auto 80px;
+        font-size: 18px;
+        line-height: 1.6;
+        color: #fff2cc;
+        text-align: center;
+      }
 
-/* ===== INVITATION PARAGRAPH ===== */
-#invitation { max-width:800px; margin:40px auto 80px; font-size:18px; line-height:1.6; color:#fff2cc; text-align:center; }
+      /* LETTER ANIMATION */
+      #letterAnimationWrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: #000;
+        z-index: 100;
+      }
+      .letter-image {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 200px;
+        height: 200px;
+        transform: translate(-50%, -50%);
+      }
+      .animated-mail {
+        position: absolute;
+        height: 150px;
+        width: 200px;
+        transition: 0.4s;
+      }
+      .animated-mail .body {
+        position: absolute;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 0 0 100px 200px;
+        border-color: transparent transparent #e95f55 transparent;
+        z-index: 2;
+      }
+      .animated-mail .top-fold {
+        position: absolute;
+        top: 50px;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 50px 100px 0 100px;
+        transform-origin: 50% 0%;
+        transition: transform 0.4s 0.4s, z-index 0.2s 0.4s;
+        border-color: #cf4a43 transparent transparent transparent;
+        z-index: 2;
+      }
+      .animated-mail .back-fold {
+        position: absolute;
+        bottom: 0;
+        width: 200px;
+        height: 100px;
+        background: #cf4a43;
+        z-index: 0;
+      }
+      .animated-mail .left-fold {
+        position: absolute;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 50px 0 50px 100px;
+        border-color: transparent transparent transparent #e15349;
+        z-index: 2;
+      }
+      .animated-mail .letter {
+        left: 20px;
+        bottom: 0;
+        position: absolute;
+        width: 160px;
+        height: 60px;
+        background: white;
+        z-index: 1;
+        overflow: hidden;
+        transition: 0.4s 0.2s;
+      }
+      .animated-mail .letter .letter-border {
+        height: 10px;
+        width: 100%;
+        background: repeating-linear-gradient(
+          -45deg,
+          #cb5a5e,
+          #cb5a5e 8px,
+          transparent 8px,
+          transparent 18px
+        );
+      }
+      .animated-mail .letter .letter-title {
+        margin-top: 10px;
+        margin-left: 5px;
+        height: 10px;
+        width: 40%;
+        background: #cb5a5e;
+      }
+      .animated-mail .letter .letter-context {
+        margin-top: 10px;
+        margin-left: 5px;
+        height: 10px;
+        width: 20%;
+        background: #cb5a5e;
+      }
+      .animated-mail .letter .letter-stamp {
+        margin-top: 30px;
+        margin-left: 120px;
+        border-radius: 100%;
+        height: 30px;
+        width: 30px;
+        background: #cb5a5e;
+        opacity: 0.3;
+      }
+      .shadow {
+        position: absolute;
+        top: 200px;
+        left: 50%;
+        width: 400px;
+        height: 30px;
+        transition: 0.4s;
+        transform: translateX(-50%);
+        border-radius: 100%;
+        background: radial-gradient(
+          rgba(0, 0, 0, 0.5),
+          rgba(0, 0, 0, 0),
+          rgba(0, 0, 0, 0)
+        );
+      }
 
-/* ===== LETTER ANIMATION ===== */
-#letterAnimationWrapper {
-  position: fixed; top:0; left:0; width:100vw; height:100vh; background:#000; z-index:100;
-}
-.letter-image { position:absolute; top:50%; left:50%; width:200px; height:200px; transform:translate(-50%, -50%); z-index:50; }
-.animated-mail { position:absolute; height:150px; width:200px; transition:0.4s; }
-.animated-mail .body { position:absolute; bottom:0; width:0; height:0; border-style:solid; border-width:0 0 100px 200px; border-color:transparent transparent #e95f55 transparent; z-index:2;}
-.animated-mail .top-fold { position:absolute; top:50px; width:0; height:0; border-style:solid; border-width:50px 100px 0 100px; transform-origin:50% 0%; transition:transform 0.4s 0.4s, z-index 0.2s 0.4s; border-color:#cf4a43 transparent transparent transparent; z-index:2;}
-.animated-mail .back-fold { position:absolute; bottom:0; width:200px; height:100px; background:#cf4a43; z-index:0; }
-.animated-mail .left-fold { position:absolute; bottom:0; width:0; height:0; border-style:solid; border-width:50px 0 50px 100px; border-color:transparent transparent transparent #e15349; z-index:2; }
-.animated-mail .letter { left:20px; bottom:0px; position:absolute; width:160px; height:60px; background:white; z-index:1; overflow:hidden; transition:0.4s 0.2s; }
-.animated-mail .letter .letter-border { height:10px; width:100%; background:repeating-linear-gradient(-45deg,#cb5a5e,#cb5a5e 8px,transparent 8px,transparent 18px);}
-.animated-mail .letter .letter-title { margin-top:10px; margin-left:5px; height:10px; width:40%; background:#cb5a5e; }
-.animated-mail .letter .letter-context { margin-top:10px; margin-left:5px; height:10px; width:20%; background:#cb5a5e; }
-.animated-mail .letter .letter-stamp { margin-top:30px; margin-left:120px; border-radius:100%; height:30px; width:30px; background:#cb5a5e; opacity:0.3; }
-.shadow { position:absolute; top:200px; left:50%; width:400px; height:30px; transition:0.4s; transform:translateX(-50%); border-radius:100%; background:radial-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0),rgba(0,0,0,0)); }
+      /* OPEN & SLIGHT CLOSE */
+      .letter-image.hover .animated-mail {
+        transform: translateY(50px);
+      }
+      .letter-image.hover .animated-mail .top-fold {
+        transform: rotateX(180deg);
+        z-index: 0;
+        transition: transform 0.6s;
+      }
+      .letter-image.settle .animated-mail .top-fold {
+        transform: rotateX(160deg);
+      }
+      .letter-image.hover .animated-mail .letter {
+        height: 180px;
+      }
+      .letter-image.hover .shadow {
+        width: 250px;
+      }
 
-/* OPEN & SLIGHT CLOSE ANIMATION */
-.letter-image.hover .animated-mail { transform: translateY(50px); }
-.letter-image.hover .animated-mail .top-fold { transform: rotateX(180deg); z-index:0; transition: transform 0.6s; }
-.letter-image.settle .animated-mail .top-fold { transform: rotateX(160deg); }
-.letter-image.hover .animated-mail .letter { height:180px; }
-.letter-image.hover .shadow { width:250px; }
-</style>
-</head>
-<body>
-
-<!-- LETTER -->
-<div id="letterAnimationWrapper">
-  <div class="letter-image">
-    <div class="animated-mail">
-      <div class="back-fold"></div>
-      <div class="letter">
-        <div class="letter-border"></div>
-        <div class="letter-title"></div>
-        <div class="letter-context"></div>
-        <div class="letter-stamp"><div class="letter-stamp-inner"></div></div>
+      /* TAP TO START BUTTON */
+      #startVideoBtn {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        z-index: 200;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- LETTER -->
+    <div id="letterAnimationWrapper">
+      <div class="letter-image">
+        <div class="animated-mail">
+          <div class="back-fold"></div>
+          <div class="letter">
+            <div class="letter-border"></div>
+            <div class="letter-title"></div>
+            <div class="letter-context"></div>
+            <div class="letter-stamp">
+              <div class="letter-stamp-inner"></div>
+            </div>
+          </div>
+          <div class="top-fold"></div>
+          <div class="body"></div>
+          <div class="left-fold"></div>
+        </div>
+        <div class="shadow"></div>
       </div>
-      <div class="top-fold"></div>
-      <div class="body"></div>
-      <div class="left-fold"></div>
+      <button id="startVideoBtn">Tap to Open</button>
     </div>
-    <div class="shadow"></div>
-  </div>
-</div>
 
-<!-- VIDEO -->
-<div class="stage" id="videoStage">
-  <video id="myVideo" muted playsinline autoplay >
-    <source src="Video.mp4" type="video/mp4">
-  </video>
+    <!-- VIDEO -->
+    <div class="stage" id="videoStage">
+      <video id="myVideo" muted playsinline autoplay preload="auto">
+        <source src="Video.mp4" type="video/mp4" />
+      </video>
+      <a
+        id="tooltip"
+        href="https://maps.app.goo.gl/K3VamcjXPHx5dPg76"
+        target="_blank"
+        rel="noopener"
+        >📍 বিবাহ স্থানের দিকনির্দেশ</a
+      >
+      <div id="countdown"></div>
+      <div id="downArrow"></div>
+    </div>
 
-  <a id="tooltip" href="https://maps.app.goo.gl/K3VamcjXPHx5dPg76" target="_blank" rel="noopener">📍 বিবাহ স্থানের দিকনির্দেশ</a>
-  <div id="countdown"></div>
-  <div id="downArrow"></div>
-</div>
+    <!-- GALLERY -->
+    <section id="gallerySection">
+      <h2>চিরঞ্জিব ✦ প্রাপ্তি</h2>
+      <div id="invitation">
+        আপনাদের আনন্দের সাথে আমন্ত্রণ জানাচ্ছি আমাদের বিবাহ অনুষ্ঠানে,
+        <strong>চিরঞ্জিব ও প্রাপ্তি</strong>। অনুষ্ঠানটি অনুষ্ঠিত হবে উক্ত
+        ঠিকানায় 📍
+        <a
+          href="https://maps.app.goo.gl/K3VamcjXPHx5dPg76"
+          target="_blank"
+          rel="noopener"
+          style="color: #d4af37"
+          >Venue Location</a
+        >। আশা করি, আপনারা সবাই উপস্থিত থেকে আমাদের আনন্দ ভাগাভাগি করবেন।
+        অনুষ্ঠান শুরু হবে সন্ধ্যা ৬টায় এবং চলবে বিকেল পর্যন্ত।
+      </div>
 
-<!-- GALLERY -->
-<section id="gallerySection">
-<h2>চিরঞ্জিব ✦ প্রাপ্তি</h2>
-<div id="invitation">
-আপনাদের আনন্দের সাথে আমন্ত্রণ জানাচ্ছি আমাদের বিবাহ অনুষ্ঠানে,
-<strong>চিরঞ্জিব ও প্রাপ্তি</strong>। অনুষ্ঠানটি অনুষ্ঠিত হবে উক্ত ঠিকানায় 📍
-<a href="https://maps.app.goo.gl/K3VamcjXPHx5dPg76" target="_blank" rel="noopener" style="color:#d4af37">Venue Location</a>।
-আশা করি, আপনারা সবাই উপস্থিত থেকে আমাদের আনন্দ ভাগাভাগি করবেন।
-অনুষ্ঠান শুরু হবে সন্ধ্যা ৬টায় এবং চলবে বিকেল পর্যন্ত।
-</div>
+      <div class="masonry">
+        <img src="img1.jpeg" />
+        <img src="img3.jpeg" />
+        <img src="img4.jpeg" />
+        <img src="img5.jpg" />
+        <img src="img6.jpg" />
+      </div>
+    </section>
 
-<div class="masonry">
-  <img src="img1.jpeg">
-  <img src="img3.jpeg">
-  <img src="img4.jpeg">
-  <img src="img5.jpg">
-  <img src="img6.jpg">
-</div>
-</section>
+    <script>
+      const letterWrapper = document.getElementById("letterAnimationWrapper");
+      const letterImage = document.querySelector(".letter-image");
+      const letterTopFold = document.querySelector(".top-fold");
+      const videoStage = document.getElementById("videoStage");
+      const video = document.getElementById("myVideo");
+      const startBtn = document.getElementById("startVideoBtn");
+      const gallery = document.getElementById("gallerySection");
+      const tooltip = document.getElementById("tooltip");
+      const countdown = document.getElementById("countdown");
+      const arrow = document.getElementById("downArrow");
 
-<script>
-const letterWrapper = document.getElementById("letterAnimationWrapper");
-const letterImage = document.querySelector(".letter-image");
-const videoStage = document.getElementById("videoStage");
-const letterTopFold = document.querySelector(".top-fold");
-const gallery = document.getElementById("gallerySection");
-const tooltip = document.getElementById("tooltip");
-const countdown = document.getElementById("countdown");
-const arrow = document.getElementById("downArrow");
+      // Open letter animation
+      function openLetter() {
+        letterImage.classList.add("hover");
+        setTimeout(() => {
+          letterImage.classList.add("settle");
+        }, 1000);
+      }
+      window.addEventListener("load", openLetter);
 
-// Hide video initially
-videoStage.style.visibility="hidden";
+      // TAP TO START VIDEO
+      startBtn.addEventListener("click", () => {
+        letterWrapper.style.display = "none";
+        videoStage.classList.add("showVideo");
+        video.play();
+        startBtn.style.display = "none";
+      });
 
-// Step1: open letter
-function openLetter(){
-  letterImage.classList.add("hover");
-  setTimeout(()=>{ letterImage.classList.add("settle"); }, 1500); // slight close after open
-}
+      video.onended = () => {
+        tooltip.classList.add("showTooltip");
+        arrow.classList.add("show");
+        gallery.classList.add("show"); // show gallery
+        countdown.classList.add("show"); // show countdown
+      };
 
+      arrow.onclick = () => {
+        if (gallery.classList.contains("show")) {
+          gallery.scrollIntoView({ behavior: "smooth" });
+        }
+      };
 
-window.addEventListener("load", openLetter);
-
-
-// Step2: show video after envelope animation ends
-letterTopFold.addEventListener("transitionend", e=>{
-  if(e.propertyName==="transform" && letterImage.classList.contains("settle")){
-    letterWrapper.style.display="none";
-    videoStage.classList.add("showVideo"); // autoplay works because muted
-  }
-});
-
-// DOWN ARROW SCROLL
-arrow.onclick = ()=>gallery.scrollIntoView({behavior:"smooth"});
-
-// Countdown
-const targetDate = new Date("2026-01-23T00:00:00").getTime();
-function startCountdown(){
-  if(Date.now()<targetDate){
-    countdown.classList.add("show");
-    const timer = setInterval(()=>{
-      const diff = targetDate - Date.now();
-      if(diff<=0){ clearInterval(timer); countdown.textContent="🎉 শুভ বিবাহ!"; return;}
-      const d=Math.floor(diff/86400000);
-      const h=Math.floor(diff/3600000)%24;
-      const m=Math.floor(diff/60000)%60;
-      const s=Math.floor(diff/1000)%60;
-      countdown.textContent=`${d} দিন ${h} ঘন্টা ${m} মিনিট ${s} সেকেন্ড`;
-    },1000);
-  }
-}
-startCountdown();
-</script>
-</body>
+      // Countdown
+      const targetDate = new Date("2026-01-23T00:00:00").getTime();
+      if (Date.now() < targetDate) {
+        const timer = setInterval(() => {
+          const diff = targetDate - Date.now();
+          if (diff <= 0) {
+            clearInterval(timer);
+            countdown.textContent = "🎉 শুভ বিবাহ!";
+            return;
+          }
+          const d = Math.floor(diff / 86400000);
+          const h = Math.floor(diff / 3600000) % 24;
+          const m = Math.floor(diff / 60000) % 60;
+          const s = Math.floor(diff / 1000) % 60;
+          countdown.textContent = `${d} দিন ${h} ঘন্টা ${m} মিনিট ${s} সেকেন্ড`;
+        }, 1000);
+      }
+    </script>
+  </body>
 </html>
