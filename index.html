@@ -9,184 +9,276 @@
 
 <style>
 :root{
-  --red:#b30000;
   --gold:#d4af37;
+  --red:#b30000;
   --offwhite:#fffaf0;
 }
 
 html,body{
   margin:0;
   background:#000;
-  font-family:'Noto Serif Bengali', serif;
-  scroll-behavior:smooth;
+  font-family:'Noto Serif Bengali',serif;
 }
 
-/* ===== VIDEO STAGE ===== */
-.stage{
-  position:relative;
-  width:100vw;
-  height:100vh;
-  overflow:hidden;
-  padding:
-    env(safe-area-inset-top)
-    env(safe-area-inset-right)
-    env(safe-area-inset-bottom)
-    env(safe-area-inset-left);
+/* ===== LETTER ===== */
+.letter-container{
+  position:fixed;
+  inset:0;
+  background:#000;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:1000;
 }
+
+.letter-image{width:200px;height:200px;position:relative;}
+.animated-mail{width:200px;height:150px;position:relative;transition:1s;}
+.animated-mail .body{
+  position:absolute;bottom:0;
+  border-style:solid;
+  border-width:0 0 100px 200px;
+  border-color:transparent transparent #e95f55 transparent;
+}
+.animated-mail .top-fold{
+  position:absolute;top:50px;
+  border-style:solid;
+  border-width:50px 100px 0 100px;
+  border-color:#cf4a43 transparent transparent transparent;
+  transform-origin:50% 0%;
+  transition:transform 1s 1s;
+}
+.animated-mail .back-fold{
+  position:absolute;bottom:0;width:200px;height:100px;background:#cf4a43;
+}
+.animated-mail .left-fold{
+  position:absolute;bottom:0;
+  border-style:solid;
+  border-width:50px 0 50px 100px;
+  border-color:transparent transparent transparent #e15349;
+}
+.animated-mail .letter{
+  position:absolute;left:20px;bottom:0;
+  width:160px;height:60px;background:#fff;
+  transition:1s .5s;
+}
+.shadow{
+  position:absolute;top:200px;left:50%;
+  width:400px;height:30px;
+  transform:translateX(-50%);
+  background:radial-gradient(rgba(0,0,0,.5),transparent);
+}
+
+.letter-image.open .animated-mail{transform:translateY(50px);}
+.letter-image.open .top-fold{transform:rotateX(180deg);}
+.letter-image.open .letter{height:180px;}
+
+/* ===== VIDEO ===== */
+.stage{display:none;width:100vw;height:100vh;position:relative;}
+.stage.show{display:block;}
 
 video{
-  position:absolute;
-  top:50%;
-  left:50%;
-  width:100%;
-  height:100%;
-  transform:translate(-50%,-50%);
+  width:100%;height:100%;
   object-fit:contain;
   background:#000;
   opacity:0;
-  transition:opacity 1.2s ease;
+  transition:opacity 1s;
 }
-
-.videoLoaded{ opacity:1; }
+.videoLoaded{opacity:1;}
 
 /* ===== TOOLTIP ===== */
 #tooltip{
   position:absolute;
-  bottom:32vh;
-  left:50%;
+  bottom:32vh;left:50%;
   transform:translateX(-50%);
+  padding:10px 18px;
   background:var(--offwhite);
   color:var(--red);
-  padding:10px 18px;
   border-radius:20px;
-  font-size:15px;
-  font-weight:600;
-  opacity:0;
-  pointer-events:none;
   border:2px solid var(--gold);
-  box-shadow:
-    0 0 18px rgba(212,175,55,.6),
-    0 0 35px rgba(179,0,0,.4);
-  transition:opacity .4s ease;
-  z-index:99999;
+  opacity:0;
+  transition:.4s;
+}
+.showTooltip{opacity:1;}
+
+/* ===== COUNTDOWN ===== */
+#countdown{
+  position:absolute;inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  font-size:56px;
+  color:var(--gold);
+  text-align:center;
+  backdrop-filter:blur(8px);
+  background:rgba(0,0,0,.45);
+  opacity:0;
+  transition:.6s;
+}
+#countdown.show{opacity:1;}
+
+/* ===== ARROW ===== */
+#downArrow{
+  position:absolute;
+  bottom:8vh;left:50%;
+  transform:translateX(-50%);
+  width:54px;height:54px;
+  border-radius:50%;
+  border:2px solid var(--gold);
+  box-shadow:0 0 25px rgba(212,175,55,.7);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  opacity:0;
+  animation:pulse 1.4s infinite;
+  cursor:pointer;
+}
+#downArrow::before{
+  content:"";
+  width:14px;height:14px;
+  border-right:3px solid var(--gold);
+  border-bottom:3px solid var(--gold);
+  transform:rotate(45deg);
+}
+#downArrow.show{opacity:1;}
+
+@keyframes pulse{
+  from{transform:translateX(-50%) scale(1);}
+  to{transform:translateX(-50%) scale(1.15);}
 }
 
-.showTooltip{
-  opacity:1;
-  pointer-events:auto;
-}
-
-/* ===== GALLERY (HIDDEN INITIALLY) ===== */
+/* ===== GALLERY ===== */
 #gallerySection{
   display:none;
   min-height:100vh;
-  background:radial-gradient(circle at top, #2b0000, #0a0000);
-  color:var(--offwhite);
-  padding:50px 20px;
+  background:radial-gradient(circle at top,#2b0000,#0a0000);
+  padding:60px 20px;
+  opacity:0;
+  transform:translateY(40px);
+  transition:1s;
 }
-
 #gallerySection.show{
   display:block;
+  opacity:1;
+  transform:translateY(0);
 }
 
 #gallerySection h2{
   text-align:center;
-  font-size:26px;
-  margin-bottom:6px;
+  font-size:32px;
   color:var(--gold);
+  text-shadow:0 0 15px rgba(212,175,55,.9);
 }
-
 #gallerySection p{
   text-align:center;
-  margin-bottom:30px;
-  color:#ffdede;
+  font-size:18px;
+  color:#fff2cc;
+  margin-bottom:40px;
+  text-shadow:0 2px 10px #000;
 }
 
-/* ===== PINTEREST STYLE MASONRY ===== */
-.masonry{
-  column-count:1;
-  column-gap:16px;
-}
+.masonry{column-count:1;column-gap:16px;}
+@media(min-width:600px){.masonry{column-count:2}}
+@media(min-width:900px){.masonry{column-count:3}}
 
-/* Tablet */
-@media (min-width:600px){
-  .masonry{
-    column-count:2;
-  }
-}
-
-/* Desktop */
-@media (min-width:900px){
-  .masonry{
-    column-count:3;
-  }
-}
-
-/* Masonry items */
 .masonry img{
   width:100%;
   margin-bottom:16px;
   border-radius:20px;
   border:3px solid var(--gold);
   box-shadow:0 15px 40px rgba(0,0,0,.8);
-  break-inside:avoid;
-  object-fit:cover;
-  transition:transform .3s ease;
-}
-
-/* Hover effect (desktop only) */
-@media (hover:hover){
-  .masonry img:hover{
-    transform:scale(1.02);
-  }
 }
 </style>
 </head>
 
 <body>
 
-<!-- ===== VIDEO SECTION ===== -->
-<div class="stage">
-  <video id="myVideo" autoplay muted playsinline preload="auto">
-    <source src="Video.mp4" type="video/mp4" />
-  </video>
-
-  <div id="tooltip">📍 বিবাহ স্থানের দিকনির্দেশ</div>
+<div class="letter-container">
+  <div class="letter-image" id="letter">
+    <div class="animated-mail">
+      <div class="back-fold"></div>
+      <div class="letter"></div>
+      <div class="top-fold"></div>
+      <div class="body"></div>
+      <div class="left-fold"></div>
+    </div>
+    <div class="shadow"></div>
+  </div>
 </div>
 
-<!-- ===== PINTEREST GALLERY ===== -->
+<div class="stage" id="videoStage">
+  <video id="myVideo" autoplay muted>
+    <source src="Video.mp4" type="video/mp4">
+  </video>
+  <div id="tooltip">📍 বিবাহ স্থানের দিকনির্দেশ</div>
+  <div id="countdown"></div>
+  <div id="downArrow"></div>
+</div>
+
 <section id="gallerySection">
   <h2>শুভ বিবাহ</h2>
   <p>চিরঞ্জিব ✦ প্রাপ্তি</p>
-
   <div class="masonry">
-    <img src="img1.jpeg" alt="">
-    <img src="img3.jpeg" alt="">
-    <img src="img4.jpeg" alt="">
-    <img src="img5.jpg" alt="">
-    <img src="img6.jpg" alt="">
+    <img src="img1.jpeg">
+    <img src="img3.jpeg">
+    <img src="img4.jpeg">
+    <img src="img5.jpg">
+    <img src="img6.jpg">
   </div>
 </section>
 
 <script>
-(function(){
-  const video = document.getElementById('myVideo');
-  const gallery = document.getElementById('gallerySection');
-  const tooltip = document.getElementById('tooltip');
+const letter = document.getElementById("letter");
+const videoStage = document.getElementById("videoStage");
+const video = document.getElementById("myVideo");
+const gallery = document.getElementById("gallerySection");
+const arrow = document.getElementById("downArrow");
+const tooltip = document.getElementById("tooltip");
+const countdown = document.getElementById("countdown");
 
-  video.addEventListener('loadeddata',()=>{
-    video.classList.add('videoLoaded');
-  });
+window.onload = () => {
+  letter.classList.add("open");
+  setTimeout(() => {
+    document.querySelector(".letter-container").remove();
+    videoStage.classList.add("show");
+    video.play();
+  }, 1500);
+};
 
-  video.addEventListener('ended',()=>{
-    tooltip.classList.add('showTooltip');
-    gallery.classList.add('show');
+video.addEventListener("loadeddata", () => {
+  video.classList.add("videoLoaded");
+});
 
-    setTimeout(()=>{
-      gallery.scrollIntoView({behavior:'smooth'});
-    },500);
-  });
-})();
+video.addEventListener("ended", () => {
+  tooltip.classList.add("showTooltip");
+  arrow.classList.add("show");
+  gallery.classList.add("show");
+  countdown.classList.add("show");
+
+  const targetDate = new Date("2026-01-23T00:00:00").getTime();
+
+  const timer = setInterval(() => {
+    const now = Date.now();
+    const diff = targetDate - now;
+
+    if (diff <= 0) {
+      clearInterval(timer);
+      countdown.textContent = "🎉 শুভ বিবাহ!";
+      return;
+    }
+
+    const d = Math.floor(diff / (1000*60*60*24));
+    const h = Math.floor((diff / (1000*60*60)) % 24);
+    const m = Math.floor((diff / (1000*60)) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+
+    countdown.textContent =
+      `${d} দিন ${h} ঘন্টা ${m} মিনিট ${s} সেকেন্ড`;
+  }, 1000);
+});
+
+arrow.onclick = () => {
+  gallery.scrollIntoView({behavior:"smooth"});
+};
 </script>
 
 </body>
